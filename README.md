@@ -1,7 +1,7 @@
 PART--1
 =======
 1.By using the below commands pulled the two images
-"docker pull infracloudio/csvserver:latest"
+#"docker pull infracloudio/csvserver:latest"
 "docker pull prom/prometheus:v2.45.2"
 
 2.Then run the container with the image but container was not running.
