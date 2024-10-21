@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+PART--1
+>>>>>>> 465f6d25b58f9e8dff2374f242f2baed4846eb00
 1.By using the below commands pulled the two images
 "docker pull infracloudio/csvserver:latest"
 "docker pull prom/prometheus:v2.45.2"
@@ -34,5 +38,8 @@ done"
 
 7.Accessed the application successfuly
 "http://localhost:9393"
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 465f6d25b58f9e8dff2374f242f2baed4846eb00
