@@ -1,6 +1,6 @@
 PART--1
 =======
-1.By using the below commands pulled the two images
+1.By using the below commands pull the two images
 "docker pull infracloudio/csvserver:latest"
 "docker pull prom/prometheus:v2.45.2"
 
