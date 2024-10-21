@@ -11,6 +11,7 @@ PART--1
 
 3.Then check the logs of container, so then came to know that the path not avialable.
 "docker logs csvserver"
+"docker inspect csvserver"
 
 4.Then created a inpuFile by using bash "gencsv.sh" with 7 entries.
 "#!/bin/bash
