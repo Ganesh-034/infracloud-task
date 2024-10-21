@@ -1,0 +1,206 @@
+CSV Server Assignment
+The developer team of the CSV server was working hard to prepare it for production but has since gone missing. You are now responsible for getting the CSV server running correctly. This document outlines the steps needed to achieve this.
+
+Prerequisites
+Before starting, ensure you have the following:
+
+Basic understanding of Docker and Prometheus. If you're new to these tools, refer to the following documentation:
+
+Docker Orientation and Setup
+Docker Build and Run Your Image
+Get Started with Docker Compose
+Prometheus Getting Started
+Prometheus Installation with Docker
+Install Docker and Docker Compose on your machine.
+
+Clone the repository to your machine (do not fork it). Use a bash shell for all operations.
+
+Create a new private repository on GitHub.
+
+If using Windows, consider using WSL-2, Play with Docker, or install a Linux VM (e.g., Ubuntu).
+
+Important Notes
+Do not modify the container image or build your own image.
+Ensure all files are named exactly as specified.
+Commit your work incrementally as you finish each part.
+The solution must work on any machine with Docker and Docker Compose without modifications.
+Part I: Running the CSV Server
+Step 1: Run the Container
+Run the CSV server container in the background and check its status:
+
+bash
+Copy code
+docker run -d --name csvserver infracloudio/csvserver:latest
+docker ps
+Step 2: Identify Issues
+If the container is failing, check the logs for errors:
+
+bash
+Copy code
+docker logs csvserver
+Step 3: Create the Input File
+Write a bash script named gencsv.sh to generate an inputFile with random values. The script should look like this:
+
+bash
+Copy code
+#!/bin/bash
+start=$1
+end=$2
+
+for ((i=start; i<=end; i++)); do
+    echo "$i, $(( RANDOM % 100 ))" >> inputFile
+done
+Make the script executable and run it with the following command:
+
+bash
+Copy code
+chmod +x gencsv.sh
+./gencsv.sh 2 8
+Step 4: Rerun the Container with the Input File
+Run the container again, ensuring the inputFile is accessible inside the container:
+
+bash
+Copy code
+docker run -d --name csvserver -v $(pwd)/inputFile:/csvserver/inputdata infracloudio/csvserver:latest
+Step 5: Access the Container
+Get shell access to the container and find the port:
+
+bash
+Copy code
+docker exec -it csvserver sh
+netstat -tuln
+Step 6: Start the Server with Port Mapping
+Stop and remove the container, then run it again, ensuring it’s accessible at http://localhost:9393 and set the CSVSERVER_BORDER environment variable:
+
+bash
+Copy code
+docker stop csvserver
+docker rm csvserver
+docker run -d --name csvserver -v $(pwd)/inputFile:/csvserver/inputdata -e CSVSERVER_BORDER=Orange -p 9393:9300 infracloudio/csvserver:latest
+Step 7: Validate the Setup
+Access the application via your web browser:
+
+arduino
+Copy code
+http://localhost:9393
+Step 8: Save the Solution
+Create a file called README.md with all the commands executed in Part I.
+Write the docker run command used in Step 6 to a file named part-1-cmd.
+Generate an output file from the application:
+bash
+Copy code
+curl -o ./part-1-output http://localhost:9393/raw
+# or if that fails:
+wget -O ./part-1-output http://localhost:9393/raw
+Capture the logs from the container:
+bash
+Copy code
+docker logs csvserver >& part-1-logs
+Ensure the following files are present in the solution directory:
+
+gencsv.sh
+inputFile
+part-1-cmd
+part-1-output
+part-1-logs
+Commit and push your changes to the GitHub repository.
+
+Part II: Docker Compose Setup
+Step 1: Clean Up
+Delete any containers running from the last part:
+
+bash
+Copy code
+docker rm -f csvserver
+Step 2: Create a docker-compose.yaml File
+Create a docker-compose.yaml file to define your services:
+
+yaml
+Copy code
+version: '3'
+services:
+  csvserver:
+    image: infracloudio/csvserver:latest
+    ports:
+      - "9393:9300"
+    volumes:
+      - ./inputFile:/csvserver/inputdata
+    environment:
+      - CSVSERVER_BORDER=Orange
+Step 3: Run the Application
+Use Docker Compose to run the application:
+
+bash
+Copy code
+docker-compose up -d
+Step 4: Save the Solution
+Copy the docker-compose.yaml to the solution directory, then commit and push the changes to your GitHub repository.
+
+Part III: Integrating Prometheus
+Step 1: Clean Up
+Delete any running containers from the last part:
+
+bash
+Copy code
+docker-compose down
+Step 2: Update docker-compose.yaml for Prometheus
+Add a Prometheus service to your docker-compose.yaml file:
+
+yaml
+Copy code
+version: '3'
+services:
+  csvserver:
+    image: infracloudio/csvserver:latest
+    ports:
+      - "9393:9300"
+    volumes:
+      - ./inputFile:/csvserver/inputdata
+    environment:
+      - CSVSERVER_BORDER=Orange
+  prometheus:
+    image: prom/prometheus:v2.45.2
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+Step 3: Configure Prometheus
+Create a prometheus.yml configuration file:
+
+yaml
+Copy code
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  job_name: 'csvserver'
+  static_configs:
+    - targets: ['csvserver:9300']
+Step 4: Restart Services
+Run all services again with Docker Compose:
+
+bash
+Copy code
+docker-compose up -d
+Step 5: Access Prometheus
+Prometheus should now be accessible at:
+
+arduino
+Copy code
+http://localhost:9090
+In the query box, type csvserver_records, click on Execute, and switch to the Graph tab. You should see a straight line graph with value 7.
+
+Step 6: Save the Solution
+Update the docker-compose.yaml in your solution directory, add any other relevant files, and commit and push the changes to your GitHub repository.
+
+Possible Errors and Caveats
+If you encounter permission errors (e.g., SELinux-related issues), adjust the volume mount in docker-compose.yaml by adding :z at the end:
+
+yaml
+Copy code
+- ./inputFile:/csvserver/inputdata:z
+Submitting the Solution
+Once you have completed and pushed your progress:
+
+Add anju-infracloud as a collaborator to your repository.
+Email the repository link to anju [at] infracloud [dot] io.
