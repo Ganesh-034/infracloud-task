@@ -9,7 +9,7 @@ PART--1
 "docker ps"
 "docker ps -a"
 
-3.Then checked the logs of container, so then came to know that the path not avialable.
+3.Then check the logs of container, so then came to know that the path not avialable.
 "docker logs csvserver"
 
 4.Then created a inpuFile by using bash "gencsv.sh" with 7 entries.
@@ -21,10 +21,12 @@ for ((i=start; i<=end; i++)); do
     echo "$i, $(( RANDOM % 100 ))" >> inputFile
 done"
 
+give permissions
 "chmod +x gencsv.sh"
+run the script
 "./gencsv.sh 2 8"
 
-5.Stopped and Deleted the container and again started the container with the input as inputFile in the container and login to the container and know the port number.
+5.Stopped and Deleted the container and again started the container with the input as inputFile in the container and login to the container and know the port number as well.
 "docker stop csvserver"
 "docker rm csvserver"
 "docker run -d --name csvserver -v $(pwd)/inputFile:/csvserver/inputdata infracloudio/csvserver:latest"
@@ -35,7 +37,7 @@ done"
 "docker run -d --name csvserver -v $(pwd)/inputFile:/csvserver/inputdata -e CSVSERVER_BORDER=Orange -p 9393:9300 infracloudio/csvserver:latest"
 
 7.Accessed the application successfuly
-"http://localhost:9393
+"http://localhost:9393"
 
 Part--2
 =======
@@ -93,5 +95,4 @@ Run the command
  “docker-compose up -d”
 3.  Prometheus successfully running on below url
 http://localhost:9090
- 
-3.	I got the graph when I run the csvserver_records  in query box of Prometheus.
+ and it showing the straight line graph with value 7 when you run query as "csvserver_records" and select the graph.
